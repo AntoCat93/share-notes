@@ -1,0 +1,109 @@
+{
+    "info": {
+        "name": "NotesShared — Auth",
+        "schema": "https://schema.postman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+        "name": "Auth",
+        "item": [{
+                "name": "Register pippo",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/register", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "register"] },
+                    "body": { "mode": "raw", "raw": "{\"username\":\"pippo\",\"password\":\"pippo123\"}" }
+                },
+                "event": [
+                    { "listen": "test", "script": { "exec": ["pm.test('201 Created', function () { pm.response.to.have.status(201); });"] } }
+                ]
+            },
+            {
+                "name": "Register pluto",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/register", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "register"] },
+                    "body": { "mode": "raw", "raw": "{\"username\":\"pluto\",\"password\":\"pluto123\"}" }
+                },
+                "event": [
+                    { "listen": "test", "script": { "exec": ["pm.test('201 Created', function () { pm.response.to.have.status(201); });"] } }
+                ]
+            },
+            {
+                "name": "Register paperino",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/register", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "register"] },
+                    "body": { "mode": "raw", "raw": "{\"username\":\"paperino\",\"password\":\"paperino123\"}" }
+                },
+                "event": [
+                    { "listen": "test", "script": { "exec": ["pm.test('201 Created', function () { pm.response.to.have.status(201); });"] } }
+                ]
+            },
+            {
+                "name": "Login (usa USERNAME/PASSWORD)",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/login", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "login"] },
+                    "body": { "mode": "raw", "raw": "{\"username\":\"{{USERNAME}}\",\"password\":\"{{PASSWORD}}\"}" }
+                },
+                "event": [{
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                            "let data = pm.response.json();",
+                            "pm.environment.set('ACCESS_TOKEN', data.access_token);",
+                            "pm.environment.set('REFRESH_TOKEN', data.refresh_token);",
+                            "pm.test('token salvati', function(){",
+                            "  pm.expect(pm.environment.get('ACCESS_TOKEN')).to.be.a('string');",
+                            "  pm.expect(pm.environment.get('REFRESH_TOKEN')).to.be.a('string');",
+                            "});"
+                        ]
+                    }
+                }]
+            },
+            {
+                "name": "Refresh token",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/refresh", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "refresh"] },
+                    "body": { "mode": "raw", "raw": "{\"refresh_token\": \"{{REFRESH_TOKEN}}\"}" }
+                },
+                "event": [{
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                            "let data = pm.response.json();",
+                            "pm.environment.set('ACCESS_TOKEN', data.access_token);",
+                            "pm.environment.set('REFRESH_TOKEN', data.refresh_token);"
+                        ]
+                    }
+                }]
+            },
+            {
+                "name": "Logout",
+                "request": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "url": { "raw": "{{BASE_URL_AUTH}}/auth/logout", "host": ["{{BASE_URL_AUTH}}"], "path": ["auth", "logout"] },
+                    "body": { "mode": "raw", "raw": "{\"refresh_token\": \"{{REFRESH_TOKEN}}\"}" }
+                },
+                "event": [{
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('204 No Content', function () { pm.response.to.have.status(204); });",
+                            "pm.environment.unset('ACCESS_TOKEN');",
+                            "pm.environment.unset('REFRESH_TOKEN');"
+                        ]
+                    }
+                }]
+            }
+        ]
+    }]
+}

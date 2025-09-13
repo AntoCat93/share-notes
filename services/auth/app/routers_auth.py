@@ -36,7 +36,7 @@ async def get_redis():
     finally:
         await r.close()
 
-@router.post("/auth/register", status_code=201)
+@router.post("/register", status_code=201)
 async def register(payload: UserCreate, db: AsyncSession = Depends(get_session)):
     if not payload.username or not payload.password:
         raise HTTPException(status_code=422, detail="username e password richiesti")
@@ -47,7 +47,7 @@ async def register(payload: UserCreate, db: AsyncSession = Depends(get_session))
     db.add(user); await db.commit()
     return {"id": user.id, "username": user.username}
 
-@router.post("/auth/login", response_model=TokenPair)
+@router.post("/login", response_model=TokenPair)
 async def login(payload: UserCreate, db: AsyncSession = Depends(get_session)):
     user = await db.scalar(select(User).where(User.username == payload.username))
     if not user or not verify_password(payload.password, user.password_hash):
@@ -57,7 +57,7 @@ async def login(payload: UserCreate, db: AsyncSession = Depends(get_session)):
         refresh_token=make_refresh_token(str(user.id)),
     )
 
-@router.post("/auth/refresh", response_model=TokenPair)
+@router.post("/refresh", response_model=TokenPair)
 async def refresh(body: RefreshIn, r = Depends(get_redis)):
     rt = body.refresh_token
     if await r.sismember("refresh_blacklist", rt):
@@ -74,7 +74,7 @@ async def refresh(body: RefreshIn, r = Depends(get_redis)):
         refresh_token=make_refresh_token(sub),
     )
 
-@router.post("/auth/logout", status_code=204)
+@router.post("/logout", status_code=204)
 async def logout(body: RefreshIn, r = Depends(get_redis)):
     await r.sadd("refresh_blacklist", body.refresh_token)
     return
