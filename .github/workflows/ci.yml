@@ -27,4 +27,4 @@ jobs:
 
       - name: Tests (auth-api + notes-api)
         run: |
-          pytest -q services/auth-api/tests services/notes-api/tests
+          pytest -q services/auth/tests services/notes/tests
